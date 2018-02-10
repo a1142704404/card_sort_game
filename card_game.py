@@ -1,4 +1,5 @@
 import random
+from Fight import fight
 """该程序是基于“插入排序法”扩展的斗地主游戏小程序,其核心是实现市面上斗地主游戏发牌自动排序的功能"""
 def shuffle():
     """
@@ -54,30 +55,71 @@ def replace(lst):
         lst[lst.index(666)] = '大王'
     return lst
 
-def HoleCards(lst):    #盖牌
-    hole_cards = replace(sort(lst))
-    print(hole_cards)
+def anti_replace(lst):
+    '''将牌面还原为数字'''
+    while 'J' in lst:
+        lst[lst.index('J')] = 11
+    while 'Q' in lst:
+        lst[lst.index('Q')] = 12
+    while 'K' in lst:
+        lst[lst.index('K')] = 13
+    while 'A' in lst:
+        lst[lst.index('A')] = 99
+    while 2 in lst:
+        lst[lst.index(2)] = 100
+    while '小王' in lst:
+        lst[lst.index('小王')] = 233
+    while '大王' in lst:
+        lst[lst.index('大王')] = 666
+    return lst
 
-def FirstCards(lst):   #第一个玩家的17张牌
+def HoleCards(lst):                     # 盖牌
+    hole_cards = replace(lst)
+    return hole_cards
+
+def FirstCards(lst):                    # 第一个玩家的17张牌排序
     first_cards = replace(sort(lst))
-    print(first_cards)
+    print('一号玩家的牌：', first_cards)
+    return first_cards
 
-def SecondCards(lst):  #第二个玩家的17张牌
+def SecondCards(lst):                   # 第二个玩家的17张牌排序
     second_cards = replace(sort(lst))
-    print(second_cards)
+    print('二号玩家的牌', second_cards)
+    return second_cards
 
-def ThirdCards(lst):  #第三个玩家的17张牌
+def ThirdCards(lst):                    # 第三个玩家的17张牌排序
     third_cards = replace(sort(lst))
-    print(third_cards)
+    print('三号玩家的牌', third_cards)
+    return third_cards
+
+def Final(lst,lst1):
+    landlord_cards = lst + lst1
+    landlord_cards = replace(sort(anti_replace(landlord_cards)))
+    print('盖牌',lst1)
+    print('地主牌：',landlord_cards)
+
+
+def main():
+    print('-----斗地主-----\n')
+    Deck = shuffle()                    # 洗牌
+    hole_cards = Deck[:3]               # 斗地主起始的三张盖牌
+    first_cards =[]
+    second_cards =[]
+    third_cards = []
+    while len(Deck) > 0:                # 依次发牌，一次一张
+        first_cards.append(Deck.pop())  # 第一个玩家拿的牌
+        second_cards.append(Deck.pop()) # 第二个玩家拿的牌
+        third_cards.append(Deck.pop())  # 第三个玩家拿的牌
+    HoleCards(hole_cards)
+    first_cards = FirstCards(first_cards)
+    second_cards = SecondCards(second_cards)
+    third_cards = ThirdCards(third_cards)
+    try:
+        landlord = fight(first_cards,second_cards,third_cards)
+        Final(landlord,HoleCards(hole_cards))
+    except TypeError:
+        pass
 
 if __name__ == '__main__':
-    print('-----斗地主-----')
-    Deck = shuffle()       #洗牌
-    hole_cards = Deck[:3]  # 斗地主起始的三张盖牌
-    HoleCards(hole_cards)
-    first_cards = Deck[3:20]  # 第一个玩家拿的17张牌
-    FirstCards(first_cards)
-    second_cards = Deck[20:37]  # 第二个玩家拿的17张牌
-    SecondCards(second_cards)
-    third_cards = Deck[37:54]  # 第三个玩家拿的17张牌
-    ThirdCards(third_cards)
+    main()
+
